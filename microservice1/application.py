@@ -1,7 +1,8 @@
-from flask import Flask, Response, request
+from flask import Flask, Response, request, render_template
 from datetime import datetime
 import json
 from columbia_student_resource import ColumbiaStudentResource
+from nimbus_resource import NimbusResource
 from flask_cors import CORS
 
 # Create the Flask application object.
@@ -58,6 +59,38 @@ def get_student_by_uni(uni):
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
 
     return rsp
+
+@app.route("/event/all", methods=["GET"])
+def get_event():
+    result = NimbusResource.get_events()
+    if result:
+        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+
+    return rsp
+
+@app.route("/event/<event_id>", methods=["GET"])
+def get_event(event_id):
+    result = NimbusResource.get_event_info(id)
+    if result:
+        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+
+    context = dict(data = rsp)
+    return render_template("event_page.html", **context)
+
+@app.route("/event/<event_id>/attendees", methods=["GET"])
+def get_attendees(event_id):
+    return
+
+@app.route("")
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)
