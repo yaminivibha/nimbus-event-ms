@@ -1,8 +1,10 @@
-import json, threading
+import json, smarty_response_contract as smarty_response
 
 from flask import Flask, Response, request
 from flask_cors import CORS
 from datetime import datetime
+from types import SimpleNamespace
+
 from smartystreets_python_sdk import StaticCredentials, exceptions, ClientBuilder
 from smartystreets_python_sdk.us_street import Lookup as StreetLookup
 
@@ -88,14 +90,27 @@ def verify_address():
     print("ZIP Code: " + first_candidate.components.zipcode)
     print("County: " + first_candidate.metadata.county_name)
     print("Latitude: {}".format(first_candidate.metadata.latitude))
-
+    # Complete list of output fields is available here:  https://smartystreets.com/docs/cloud/us-street-api#http-response-output
+    
+    content = json.dumps(first_candidate)
+    print(content)
+    content_address = json.loads(content, object_hook=lambda d: SimpleNamespace(**d))
+    return content_address
+"""
     if result:
         response = Response(json.dumps(result), status=200,
                             content_type=CONTENT_TYPE_JSON)
     else:
         response = Response("NOT FOUND", status=404,
                             content_type=CONTENT_TYPE_PLAIN_TEXT)
-    return response
+"""
+
+def encode_complex(z):
+    if isinstance(z, complex):
+        return (z.real, z.imag)
+    else:
+        type_name = z.__class__.__name__
+        raise TypeError(f"Object of type '{type_name}' is not JSON serializable")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5020, debug=False)
