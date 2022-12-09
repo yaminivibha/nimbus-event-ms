@@ -43,7 +43,7 @@ class NimbusResource:
             Params: event_id
             Returns: attendee information
         """
-        sql = "SELECT * FROM event.event JOIN event.attendees ON event_idJOIN attendees.info ON attendee_id WHERE event_id =%s"
+        sql = "SELECT * FROM event.event JOIN event.attendees ON event_id JOIN attendees.info ON attendee_id WHERE event_id =%s"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=id)
