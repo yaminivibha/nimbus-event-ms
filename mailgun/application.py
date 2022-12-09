@@ -1,15 +1,9 @@
 from flask import Flask, Response, request
 from datetime import datetime
 from flask_cors import CORS
-
 import json
 
-# Create the Flask application object.
-app = Flask(__name__,
-            static_url_path='/',
-            static_folder='static/class-ui/',
-            template_folder='web/templates')
-
+application = app = Flask(__name__)
 CORS(app)
 
 
@@ -31,22 +25,6 @@ def after_request_func():
     return response
 
 """
-
-
-@app.get("/api/health")
-def get_health():
-    t = str(datetime.now())
-    msg = {
-        "name": "F22-Starter-Microservice",
-        "health": "Good",
-        "at time": t
-    }
-
-    # DFF TODO Explain status codes, content type, ... ...
-    result = Response(json.dumps(msg), status=200,
-                      content_type="application/json")
-
-    return result
 
 
 @app.route("/api/students/<uni>", methods=["GET"])

@@ -1,13 +1,15 @@
 import json
-from flask import Flask, request, jsonify
+from flask import Flask, request, Response
 from flask_cors import CORS
 from pprint import pprint
 from smartystreets_python_sdk import StaticCredentials, exceptions, ClientBuilder
 from smartystreets_python_sdk.us_street import Lookup as StreetLookup
 from model.candidate import CandidateSchema
 
-app = Flask(__name__)
+application = app = Flask(__name__)
 CORS(app)
+
+# TODO: Add caching
 
 # TODO: store these constants in a shared file
 CONTENT_TYPE_JSON = "application/json"
@@ -67,8 +69,9 @@ def verify_address_freeform():
     print("Results for result_candidate: ")
     pprint(result_candidate)
     print("\n")
-    content = jsonify(result_candidate)
-    return content, 200
+    result = Response(json.dumps(result_candidate), status=200,
+                      content_type="application/json")
+    return result
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5020, debug=False)
