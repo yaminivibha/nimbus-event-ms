@@ -17,4 +17,5 @@ boto3==1.26.3
 pyOpenSSL==22.0.0
 flask-mysqldb==1.0.1
 Flask-SQLAlchemy==2.0.0
+flask_marshmallow==0.14.0
 smartystreets_python_sdk==4.11.9

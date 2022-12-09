@@ -1,17 +1,23 @@
 from flask import Flask, Response, request
 from datetime import datetime
-import json
+from flask_marshmallow import Marshmallow
+from flask_sqlalchemy import SQLAlchemy
 from nimbus_users import Nimbus_Users
 from flask_cors import CORS
 
+import json
+
 # Create the Flask application object.
-app = Flask(__name__,
+application = app = Flask(__name__,
             static_url_path='/',
             static_folder='static/class-ui/',
             template_folder='web/templates')
 
 CORS(app)
 
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/db_name'
+#db = SQLAlchemy(app)
+#ma = Marshmallow(app)
 
 """
 TODO: Add Middleware
@@ -54,6 +60,7 @@ def get_health():
 @app.route("/users/<uid>", methods=["GET"])
 def get_user_by_uid(uid):
     result = Nimbus_Users.get_by_uid(uid)
+    
 
     if result:
         response = Response(json.dumps(result), status=200,
