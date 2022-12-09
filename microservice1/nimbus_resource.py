@@ -2,7 +2,6 @@ import pymysql
 
 import os
 
-
 class NimbusResource:
 
     def __int__(self):
@@ -47,7 +46,7 @@ class NimbusResource:
     @staticmethod
     def get_event_info(id):
         # TODO: yamini write a join between event.event and event.tickets
-        sql = "SELECT * FROM event.event where event_id=%s"
+        sql = "SELECT * FROM event.event JOIN event.tickets WHERE event_id =%s"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=id)
