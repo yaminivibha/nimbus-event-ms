@@ -1,0 +1,15 @@
+/* 
+    Reference: https://smartystreets.com/docs/us-street-api#input-fields
+        Each address submitted must have non-blank values for one of the following field combinations to be eligible for a positive address match:
+
+        street + city + state
+        street + zipcode
+        street (entire address in the street field — what we call a "freeform" input)
+*/
+// Fu Foundation School of Engineering and Applied Science
+{
+  "street": "500 W 120th St #510, New York, NY 10027",
+  "city": "",
+  "state": "",
+  "zipcode": ""
+}
