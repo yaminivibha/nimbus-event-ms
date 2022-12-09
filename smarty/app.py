@@ -34,7 +34,7 @@ def after_request_func():
     return response
 """
 
-@app.route("/smarty/", methods=["POST"])
+@app.route("/address", methods=["POST"])
 def verify_address_freeform():
 
     # TODO: store these credentials in AWS KMS
@@ -70,7 +70,7 @@ def verify_address_freeform():
     pprint(result_candidate)
     print("\n")
     result = Response(json.dumps(result_candidate), status=200,
-                      content_type="application/json")
+                      content_type=CONTENT_TYPE_JSON)
     return result
 
 if __name__ == '__main__':

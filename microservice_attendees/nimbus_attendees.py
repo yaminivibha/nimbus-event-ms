@@ -2,7 +2,7 @@ import pymysql
 import os
 
 
-class Nimbus_Users:
+class Nimbus_Attendees:
 
     def __int__(self):
         pass
@@ -24,18 +24,18 @@ class Nimbus_Users:
         return conn
 
     @staticmethod
-    def get_user_by_uid(uid):
+    def get_attendee_by_uid(uid):
         sql = "SELECT * FROM f22_databases.columbia_students where guid=%s"
-        conn = Nimbus_Users._get_connection()
+        conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=uid)
         result = cur.fetchone()
         return result
 
     @staticmethod
-    def get_user_address_by_uid(uid):
+    def get_attendee_address_by_uid(uid):
         sql = "SELECT * FROM f22_databases.columbia_students where guid=%s"
-        conn = Nimbus_Users._get_connection()
+        conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=uid)
         result = cur.fetchone()
