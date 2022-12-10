@@ -4,7 +4,6 @@ import os
 
 
 class NimbusResource:
-
     def __int__(self):
         pass
 
@@ -28,19 +27,13 @@ class NimbusResource:
         )
         return conn
 
-    # @staticmethod
-    # def get_by_key(key):
-    #     sql = "SELECT * FROM f22_databases.columbia_student where uni=%s";
-    #     conn = ColumbiaStudentResource._get_connection()
-    #     cur = conn.cursor()
-    #     res = cur.execute(sql, args=key)
-    #     result = cur.fetchone()
-    #
-    #     return result
-
     @staticmethod
-    def get_events():
-        sql = "SELECT * FROM event.event where event_id=%s"
+    def get_event_info(id):
+        """Gets event information & ticket information
+            Params: event_id
+            Returns: event information and ticket information
+        """
+        sql = "SELECT * FROM event.event JOIN event.attendees WHERE event_id =%s"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=id)
@@ -49,9 +42,12 @@ class NimbusResource:
         return result
 
     @staticmethod
-    def get_event_info(id):
-        # TODO: yamini write a join between event.event and event.tickets
-        sql = "SELECT * FROM event.event where event_id=%s"
+    def get_event_attendees(id):
+        """Gets event information & ticket information
+            Params: event_id
+            Returns: attendee information
+        """
+        sql = "SELECT * FROM event.event JOIN event.attendees ON event_id JOIN attendees.info ON attendee_id WHERE event_id =%s"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=id)
