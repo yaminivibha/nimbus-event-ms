@@ -1,4 +1,4 @@
-from flask import Flask, Response, request, render_template
+from flask import Flask, Response, request, render_template, redirect
 from datetime import datetime
 import json
 from columbia_student_resource import ColumbiaStudentResource
@@ -17,7 +17,7 @@ CORS(app)
 """
 TODO: Add Middleware
 - @before_request : social login OIDC IAM GOOGL,
-- @after_request 
+- @after_request
 
 @app.before_request
 def before_request_func():
@@ -33,6 +33,7 @@ def after_request_func():
 
 """
 
+
 @app.get("/api/health")
 def get_health():
     t = str(datetime.now())
@@ -43,55 +44,69 @@ def get_health():
     }
 
     # DFF TODO Explain status codes, content type, ... ...
-    result = Response(json.dumps(msg), status=200, content_type="application/json")
+    result = Response(json.dumps(msg), status=200,
+                      content_type="application/json")
 
     return result
 
 
-@app.route("/api/students/<uni>", methods=["GET"])
-def get_student_by_uni(uni):
-
-    result = ColumbiaStudentResource.get_by_key(uni)
+# Event API
+@app.route("/event", methods=["GET", "POST"])
+def event():
+    if request.method == "GET":
+        result = NimbusResource.get_events()
+    else:
+        result = NimbusResource.create_event()
 
     if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+        rsp = Response(json.dumps(result), status=200,
+                       content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
 
     return rsp
 
-@app.route("/event/all", methods=["GET"])
-def get_event():
-    result = NimbusResource.get_events()
+
+@app.route("/event/<event_id>", methods=["GET", "DELETE", "PUT"])
+def event(event_id):
+    # handle different requests for this uri
+    if request.method == "GET":
+        result = NimbusResource.get_event_info(id)
+    elif request.method == "PUT":
+        result = NimbusResource.update_event(request.form)
+    else:
+        result = NimbusResource.delete_event(event_id)
+
     if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+        rsp = Response(json.dumps(result), status=200,
+                       content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
-
     return rsp
 
-@app.route("/event/<event_id>", methods=["GET"])
-def get_event(event_id):
-    result = NimbusResource.get_event_info(id)
-    if result:
-        rsp = Response(json.dumps(result), status=200, content_type="application.json")
-    else:
-        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
-
-    context = dict(data = rsp)
-    return render_template("event_page.html", **context)
 
 @app.route("/event/<event_id>/attendees", methods=["GET"])
 def get_attendees(event_id):
-    return
+    result = NimbusResource.get_event_info(event_id)
+    if result:
+        rsp = Response(json.dumps(result), status=200,
+                       content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
 
-@app.route("")
+    return rsp
 
 
-
-
+@app.route("/event/create", methods=["POST"])
+def create_event():
+    result = NimbusResource.create_event(request.form)
+    if result:
+        rsp = Response(json.dumps(result), status=200,
+                       content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+    return rsp
 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)
-

@@ -14,6 +14,10 @@ class NimbusResource:
         pw = os.environ.get("DBPW")
         host = os.environ.get("DBHOST")
 
+        user = "admin"
+        password = "dbpassword"
+        host = "nimbus-db.c4dwsoa8ic0w.us-east-1.rds.amazonaws.com"
+
         conn = pymysql.connect(
             user=user,
             password=pw,
@@ -48,6 +52,66 @@ class NimbusResource:
     def get_event_info(id):
         # TODO: yamini write a join between event.event and event.tickets
         sql = "SELECT * FROM event.event where event_id=%s"
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql, args=id)
+        result = cur.fetchone()
+
+        return result
+
+    @staticmethod
+    def create_event(event_info, loc_info):
+        sql_event = f"""INSERT INTO event.event ("""
+        # get which columns have values
+        valid_columns = [key for key in event_info if not event_info[key]]
+        for col in valid_columns:
+            sql_event += f"col, "
+        sql_event += ") VALUES ("
+        # column values with info
+        for col in valid_columns:
+            sql_event += f"{event_info[col], }"
+        sql_event += ")"
+
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql_event, args=id)
+        result_event = cur.fetchone()
+
+        sql_location = f"""INSERT INTO event.location"""
+        # get which columns have values
+        valid_columns = [key for key in loc_info if not loc_info[key]]
+        for col in valid_columns:
+            sql_event += f"col, "
+        sql_location += ") VALUES ("
+        # column values with info
+        for col in valid_columns:
+            sql_event += f"{loc_info[col], }"
+        sql_location += ")"
+
+        res = cur.execute(sql_location, args=id)
+        result_event = cur.fetchone()
+
+        return {'event': result_event, 'location': loc_info}
+
+    @staticmethod
+    def update_event(info):
+        sql = f"""UPDATE event.event SET """
+        for key in info:
+            if info[key] != "":
+                sql += f"{key}={info[key]}"
+        sql += f"WHERE event_id={info.event_id}"
+
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql, args=id)
+        result = cur.fetchone()
+
+        return result
+
+    @staticmethod
+    def delete_event(event_id):
+        sql = f"""DELETE FROM event.event WHERE event_id={event_id}"""
+
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=id)
