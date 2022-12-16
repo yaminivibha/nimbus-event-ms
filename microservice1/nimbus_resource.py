@@ -42,15 +42,15 @@ class NimbusResource:
 
 
     @staticmethod
-    def get_event_info(id):
+    def get_event_info(event_id):
         """Returns from event.event join event.attendees
             Params: event_id
             Returns: event information and ticket information
         """
-        sql = "SELECT * FROM event.e JOIN event.attendees AS A WHERE E.event_id=%s"
+        sql = f"SELECT * FROM event.e JOIN event.attendees AS A WHERE E.event_id={event_id}"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, (id))
+        res = cur.execute(sql)
         result = cur.fetchone()
 
         return result
@@ -111,8 +111,7 @@ class NimbusResource:
 
     @staticmethod
     def update_event(info):
-        """
-        update event in events.event
+        """ Update event in events.event
         """
         sql = f"""UPDATE event.event SET """
         for key in info:
