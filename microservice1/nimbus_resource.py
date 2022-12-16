@@ -29,7 +29,7 @@ class NimbusResource:
 
     @staticmethod
     def get_events():
-        """ Gets all events in database
+        """ Gets all events in event.event 
             Returns: all events
         """
         sql = "SELECT * FROM event.event"
@@ -43,7 +43,7 @@ class NimbusResource:
 
     @staticmethod
     def get_event_info(id):
-        """Gets event information & ticket information
+        """Returns from event.event join event.attendees
             Params: event_id
             Returns: event information and ticket information
         """
@@ -71,6 +71,12 @@ class NimbusResource:
 
     @staticmethod
     def create_event(event_info, loc_info):
+        """create row in events.event 
+            Params: event_info
+                    loc_info
+            Returns: dict[str:str]
+        """
+        
         sql_event = f"""INSERT INTO event.event ("""
         # get which columns have values
         valid_columns = [key for key in event_info if not event_info[key]]
@@ -105,6 +111,9 @@ class NimbusResource:
 
     @staticmethod
     def update_event(info):
+        """
+        update event in events.event
+        """
         sql = f"""UPDATE event.event SET """
         for key in info:
             if info[key] != "":
@@ -120,6 +129,8 @@ class NimbusResource:
 
     @staticmethod
     def delete_event(event_id):
+        """ Deletes event from event db by event_id
+        """        
         sql = f"""DELETE FROM event.event WHERE event_id={event_id}"""
 
         conn = NimbusResource._get_connection()
