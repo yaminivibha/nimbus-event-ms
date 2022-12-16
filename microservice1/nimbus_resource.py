@@ -47,24 +47,30 @@ class NimbusResource:
             Params: event_id
             Returns: event information and ticket information
         """
-        sql = f"SELECT * FROM event.e JOIN event.attendees AS A WHERE E.event_id={event_id}"
+        sql = f"SELECT * FROM event.event AS E JOIN event.attendees AS A WHERE E.event_id=%s"
+        print(sql)
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql)
+        res = cur.execute(sql, (event_id))
         result = cur.fetchone()
 
         return result
 
     @staticmethod
-    def get_event_attendees(id):
+    def get_event_attendees(event_id):
         """Gets event information & ticket information
             Params: event_id
             Returns: attendee information
         """
-        sql = "SELECT * FROM event.event JOIN event.attendees ON event_id JOIN attendees.info ON attendee_id WHERE event_id =%s"
+        sql = """
+            select * from
+             event.attendees
+                 join attendee.contact_info
+                     on attendees.attendee_id = contact_info.attendee_id
+            where event_id=%s"""
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, (id))
+        res = cur.execute(sql, (event_id))
         result = cur.fetchone()
 
         return result
@@ -148,7 +154,22 @@ class NimbusResource:
         """
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, args=id)
+        res = cur.execute(sql)
+        result = cur.fetchone()
+
+        return result
+
+    @staticmethod
+    def unregister_for_event(attendee_id, event_id):
+        """ Unregisters an attendee for an event by event_id, attendee_id
+        """
+        sql = f"""DELETE FROM 
+                event.attendees
+                WHERE attendee_id={attendee_id} AND event_id={event_id}"""
+        
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql)
         result = cur.fetchone()
 
         return result

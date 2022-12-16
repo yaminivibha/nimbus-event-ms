@@ -51,12 +51,9 @@ def get_health():
 
 
 # Event API
-@app.route("/event", methods=["GET", "POST"])
+@app.route("/event", methods=["GET"])
 def all_events():
-    if request.method == "GET":
-        result = NimbusResource.get_events()
-    else:
-        result = NimbusResource.create_event()
+    result = NimbusResource.get_events()
 
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
@@ -71,7 +68,7 @@ def all_events():
 def event(event_id):
     # handle different requests for this uri
     if request.method == "GET":
-        result = NimbusResource.get_event_info(id)
+        result = NimbusResource.get_event_info(event_id)
     elif request.method == "PUT":
         result = NimbusResource.update_event(request.form)
     else:
@@ -87,7 +84,7 @@ def event(event_id):
 
 @app.route("/event/<event_id>/attendees", methods=["GET"])
 def get_attendees(event_id):
-    result = NimbusResource.get_event_info(event_id)
+    result = NimbusResource.get_event_attendees(event_id)
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
@@ -103,6 +100,19 @@ def create_event():
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+    return rsp
+
+
+@app.route("/event/<event_id>/register", methods=["POST"])
+def event_registration(event_id):
+    attendee_id = request.get_json()['attendee_id']
+
+    result = NimbusResource.register_for_event(attendee_id, event_id)
+    if result:
+      rsp = Response(json.dumps(result, default=str), status=200,
+                    content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
     return rsp
