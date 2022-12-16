@@ -29,7 +29,7 @@ class NimbusResource:
 
     @staticmethod
     def get_events():
-        """ Gets all events in event.event 
+        """ Gets all events in event.event
             Returns: all events
         """
         sql = "SELECT * FROM event.event"
@@ -47,7 +47,7 @@ class NimbusResource:
             Params: event_id
             Returns: event information and ticket information
         """
-        sql = "SELECT * FROM event.event AS E JOIN event.attendees AS A WHERE E.event_id=%s"
+        sql = "SELECT * FROM event.e JOIN event.attendees AS A WHERE E.event_id=%s"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, (id))
@@ -133,6 +133,20 @@ class NimbusResource:
         """        
         sql = f"""DELETE FROM event.event WHERE event_id={event_id}"""
 
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql, args=id)
+        result = cur.fetchone()
+
+        return result
+
+    @staticmethod
+    def register_for_event(attendee_id, event_id):
+        """ Registers an attendee for an event by event_id, attendee_id
+        """
+        sql = f"""INSERT INTO event.attendees
+        VALUES ({event_id}, {attendee_id})
+        """
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=id)
