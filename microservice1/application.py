@@ -52,7 +52,7 @@ def get_health():
 
 # Event API
 @app.route("/event", methods=["GET", "POST"])
-def event():
+def all_events():
     if request.method == "GET":
         result = NimbusResource.get_events()
     else:

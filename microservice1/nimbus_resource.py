@@ -28,6 +28,17 @@ class NimbusResource:
         return conn
 
     @staticmethod
+    def get_events():
+        sql = "SELECT * FROM event.event"
+        conn = NimbusResource._get_connection()
+        cur =  conn.cursor()
+        res = cur.execute(sql, args=id)
+        result = cur.fetchone()
+
+        return result
+
+
+    @staticmethod
     def get_event_info(id):
         """Gets event information & ticket information
             Params: event_id
