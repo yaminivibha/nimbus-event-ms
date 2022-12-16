@@ -19,7 +19,7 @@ class NimbusResource:
 
         conn = pymysql.connect(
             user=user,
-            password=pw,
+            password=password,
             host=host,
             port=3306,
             cursorclass=pymysql.cursors.DictCursor,
@@ -29,10 +29,13 @@ class NimbusResource:
 
     @staticmethod
     def get_events():
+        """ Gets all events in database
+            Returns: all events
+        """
         sql = "SELECT * FROM event.event"
         conn = NimbusResource._get_connection()
         cur =  conn.cursor()
-        res = cur.execute(sql, args=id)
+        res = cur.execute(sql)
         result = cur.fetchone()
 
         return result
@@ -44,10 +47,10 @@ class NimbusResource:
             Params: event_id
             Returns: event information and ticket information
         """
-        sql = "SELECT * FROM event.event JOIN event.attendees WHERE event_id =%s"
+        sql = "SELECT * FROM event.event JOIN event.attendees WHERE event_id=%s"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, args=id)
+        res = cur.execute(sql, (id))
         result = cur.fetchone()
 
         return result
@@ -61,7 +64,7 @@ class NimbusResource:
         sql = "SELECT * FROM event.event JOIN event.attendees ON event_id JOIN attendees.info ON attendee_id WHERE event_id =%s"
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, args=id)
+        res = cur.execute(sql, (id))
         result = cur.fetchone()
 
         return result

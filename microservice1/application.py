@@ -1,5 +1,5 @@
 from flask import Flask, Response, request, render_template, redirect
-from datetime import datetime
+from datetime import datetime, date
 import json
 from columbia_student_resource import ColumbiaStudentResource
 from nimbus_resource import NimbusResource
@@ -59,7 +59,7 @@ def all_events():
         result = NimbusResource.create_event()
 
     if result:
-        rsp = Response(json.dumps(result), status=200,
+        rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
@@ -78,7 +78,7 @@ def event(event_id):
         result = NimbusResource.delete_event(event_id)
 
     if result:
-        rsp = Response(json.dumps(result), status=200,
+        rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
@@ -89,7 +89,7 @@ def event(event_id):
 def get_attendees(event_id):
     result = NimbusResource.get_event_info(event_id)
     if result:
-        rsp = Response(json.dumps(result), status=200,
+        rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
@@ -101,7 +101,7 @@ def get_attendees(event_id):
 def create_event():
     result = NimbusResource.create_event(request.form)
     if result:
-        rsp = Response(json.dumps(result), status=200,
+        rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
