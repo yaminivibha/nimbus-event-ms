@@ -107,7 +107,8 @@ def create_event():
 
 @app.route("/event/<event_id>/register", methods=["POST"])
 def event_registration(event_id):
-    attendee_id = request.get_json()['attendee_id']
+    req = request.get_json(force=True)
+    attendee_id = req.get('attendee_id', None)
 
     result = NimbusResource.register_for_event(attendee_id, event_id)
     if result:

@@ -149,14 +149,13 @@ class NimbusResource:
         """ Registers an attendee for an event by event_id, attendee_id
         """
         sql = f"""INSERT INTO event.attendees
-        VALUES ({event_id}, {attendee_id})
+        VALUES ({event_id}, '{attendee_id}')
         """
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql)
-        result = cur.fetchone()
+        cur.execute(sql)
 
-        return result
+        return True
 
     @staticmethod
     def unregister_for_event(attendee_id, event_id):
@@ -164,11 +163,10 @@ class NimbusResource:
         """
         sql = f"""DELETE FROM 
                 event.attendees
-                WHERE attendee_id={attendee_id} AND event_id={event_id}"""
+                WHERE attendee_id='{attendee_id}' AND event_id={event_id}"""
 
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql)
-        result = cur.fetchone()
+        cur.execute(sql)
 
-        return result
+        return True
