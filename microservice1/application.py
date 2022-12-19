@@ -111,12 +111,25 @@ def event_registration(event_id):
 
     result = NimbusResource.register_for_event(attendee_id, event_id)
     if result:
-      rsp = Response(json.dumps(result, default=str), status=200,
-                    content_type="application.json")
+        rsp = Response(json.dumps(result, default=str), status=200,
+                       content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+    return rsp
+
+
+@app.route("/event/<event_id>/unregister", methods=["POST"])
+def event_unregistration(event_id):
+    attendee_id = request.get_json()['attendee_id']
+
+    result = NimbusResource.unregister_for_event(attendee_id, event_id)
+    if result:
+        rsp = Response(json.dumps(result, default=str), status=200,
+                       content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
     return rsp
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5011)
+    app.run(host="0.0.0.0", port=5011, debug=True)

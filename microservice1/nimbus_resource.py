@@ -34,12 +34,11 @@ class NimbusResource:
         """
         sql = "SELECT * FROM event.event"
         conn = NimbusResource._get_connection()
-        cur =  conn.cursor()
-        res = cur.execute(sql)
-        result = cur.fetchone()
+        cur = conn.cursor()
+        cur.execute(sql)
+        result = cur.fetchall()
 
         return result
-
 
     @staticmethod
     def get_event_info(event_id):
@@ -82,7 +81,7 @@ class NimbusResource:
                     loc_info
             Returns: dict[str:str]
         """
-        
+
         sql_event = f"""INSERT INTO event.event ("""
         # get which columns have values
         valid_columns = [key for key in event_info if not event_info[key]]
@@ -135,7 +134,7 @@ class NimbusResource:
     @staticmethod
     def delete_event(event_id):
         """ Deletes event from event db by event_id
-        """        
+        """
         sql = f"""DELETE FROM event.event WHERE event_id={event_id}"""
 
         conn = NimbusResource._get_connection()
@@ -166,7 +165,7 @@ class NimbusResource:
         sql = f"""DELETE FROM 
                 event.attendees
                 WHERE attendee_id={attendee_id} AND event_id={event_id}"""
-        
+
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql)
