@@ -96,7 +96,9 @@ def get_attendees(event_id):
 
 @app.route("/event/create", methods=["POST"])
 def create_event():
-    result = NimbusResource.create_event(request.form)
+    req_body = request.get_json(force=True)
+    result = NimbusResource.create_event(req_body.get(
+        'event_info', None), req_body.get('loc_info', None))
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")

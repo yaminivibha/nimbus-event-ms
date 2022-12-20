@@ -9,9 +9,9 @@ class NimbusResource:
 
     @staticmethod
     def _get_connection():
-        user = os.environ.get("DBUSER")
-        pw = os.environ.get("DBPW")
-        host = os.environ.get("DBHOST")
+        # user = os.environ.get("DBUSER")
+        # pw = os.environ.get("DBPW")
+        # host = os.environ.get("DBHOST")
 
         user = "admin"
         password = "dbpassword"
@@ -26,6 +26,32 @@ class NimbusResource:
             autocommit=True
         )
         return conn
+    # Helper Methods for creating SQL statements for specific SQL types
+
+    @staticmethod
+    def _get_table_schema(table):
+        conn = NimbusResource._get_connection()
+        sql = f"DESCRIBE event.{table}"
+        cur = conn.cursor()
+        cur.execute(sql)
+
+        # Fetch and print the meta-data of the table
+        result = cur.fetchall()
+        col_name_to_type = {}
+        for col in result:
+            col_name_to_type[col['Field']] = col['Type']
+        return col_name_to_type
+
+    @staticmethod
+    def _create_stmt_from_type(col_type, stmt):
+        if col_type == 'time':
+            return f"time('{stmt}')"
+        elif col_type == 'int':
+            return stmt
+        elif col_type == 'date':
+            return f"date('{stmt}')"
+        elif 'varchar' in col_type:
+            return f"'{stmt}'"
 
     @staticmethod
     def get_events():
@@ -76,43 +102,75 @@ class NimbusResource:
 
     @staticmethod
     def create_event(event_info, loc_info):
-        """create row in events.event 
+        """create row in events.event
             Params: event_info
                     loc_info
             Returns: dict[str:str]
         """
+        # Figure out types of the column
+        event_schema = NimbusResource._get_table_schema('event')
+        # get which columns have values
+        valid_columns = [key for key in event_info if event_info[key]]
 
         sql_event = f"""INSERT INTO event.event ("""
-        # get which columns have values
-        valid_columns = [key for key in event_info if not event_info[key]]
         for col in valid_columns:
-            sql_event += f"col, "
-        sql_event += ") VALUES ("
-        # column values with info
+            if col == valid_columns[-1]:
+                sql_event += f"{col}) "
+            else:
+                sql_event += f"{col}, "
+
+        sql_event += "VALUES ("
         for col in valid_columns:
-            sql_event += f"{event_info[col], }"
-        sql_event += ")"
+            val = event_info[col]
+            val_sql = NimbusResource._create_stmt_from_type(
+                event_schema[col], val)
+            if col == valid_columns[-1]:
+                sql_event += val_sql + ')'
+            else:
+                sql_event += val_sql + ', '
+
+        print('sql of event: ')
+        print(sql_event)
 
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql_event, args=id)
+        cur.execute(sql_event)
         result_event = cur.fetchone()
 
-        sql_location = f"""INSERT INTO event.location"""
+        cur.execute("SELECT LAST_INSERT_ID()")
+        event_id = cur.fetchone()['LAST_INSERT_ID()']
+
+        # Figure out types of the column
+        loc_schema = NimbusResource._get_table_schema('location')
+        print(loc_schema)
         # get which columns have values
-        valid_columns = [key for key in loc_info if not loc_info[key]]
-        for col in valid_columns:
-            sql_event += f"col, "
-        sql_location += ") VALUES ("
-        # column values with info
-        for col in valid_columns:
-            sql_event += f"{loc_info[col], }"
-        sql_location += ")"
+        valid_columns = ['event_id'] + \
+            [key for key in loc_info if loc_info[key]]
 
-        res = cur.execute(sql_location, args=id)
-        result_event = cur.fetchone()
+        sql_loc = f"""INSERT INTO event.location ("""
+        for col in valid_columns:
+            if col == valid_columns[-1]:
+                sql_loc += f"{col}) "
+            else:
+                sql_loc += f"{col}, "
 
-        return {'event': result_event, 'location': loc_info}
+        sql_loc += "VALUES ("
+        for col in valid_columns:
+            if col == 'event_id':
+                val = f"{event_id}"
+            val_sql = NimbusResource._create_stmt_from_type(
+                loc_schema[col], val)
+            if col == valid_columns[-1]:
+                sql_loc += val_sql + ')'
+            else:
+                sql_loc += val_sql + ', '
+
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        cur.execute(sql_loc)
+        result_info = cur.fetchone()
+
+        return {'event': result_event, 'location': result_info}
 
     @staticmethod
     def update_event(info):
