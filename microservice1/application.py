@@ -93,7 +93,7 @@ def get_attendees(event_id):
     return rsp
 
 
-@app.route("/event/<attendee_id>", methods=["GET"])
+@app.route("/event/attendee/<attendee_id>", methods=["GET"])
 def get_users_events(attendee_id):
     result = NimbusResource.get_users_events(attendee_id)
     if result:
@@ -104,7 +104,7 @@ def get_users_events(attendee_id):
     return rsp
 
 
-@app.route("/event/<organizer_id>", methods=["GET"])
+@app.route("/event/organizer/<organizer_id>", methods=["GET"])
 def get_organizers_events(organizer_id):
     result = NimbusResource.get_organizer_events(organizer_id)
     if result:
