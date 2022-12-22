@@ -87,15 +87,15 @@ class NimbusResource:
             Params: event_id
             Returns: attendee information
         """
-        sql = """
+        sql = f"""
             select * from
              event.attendees
                  join attendee.contact_info
                      on attendees.attendee_id = contact_info.attendee_id
-            where event_id=%s"""
+            where event_id='{event_id}'"""
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, (event_id))
+        res = cur.execute(sql)
         result = cur.fetchone()
 
         return result
@@ -106,13 +106,13 @@ class NimbusResource:
             Params: organizer_id
             Returns: event information
         """
-        sql = """
+        sql = f"""
             select * from
                 event.event
-                where organizer_id='%s'"""
+                where organizer_id='{organizer_id}'"""
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, (organizer_id))
+        res = cur.execute(sql)
         result = cur.fetchall()
 
         return result
@@ -123,13 +123,13 @@ class NimbusResource:
             Params: attendee_id
             Returns: event information
         """
-        sql = """
+        sql = f"""
             select * FROM event.event
              WHERE event_id IN 
-             (SELECT  A.event_id from event.attendees as A WHERE A.attendee_id='%s')"""
+             (SELECT  A.event_id from event.attendees as A WHERE A.attendee_id='{attendee_id}')"""
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, (attendee_id))
+        res = cur.execute(sql)
         result = cur.fetchall()
 
         return result

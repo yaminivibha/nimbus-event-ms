@@ -54,6 +54,7 @@ def get_health():
 @app.route("/event", methods=["GET"])
 def all_events():
     result = NimbusResource.get_events()
+    print(result)
 
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
