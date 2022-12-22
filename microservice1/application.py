@@ -66,6 +66,7 @@ def all_events():
 
 @app.route("/event/<event_id>", methods=["GET", "DELETE", "PUT"])
 def event(event_id):
+    print(request)
     # handle different requests for this uri
     if request.method == "GET":
         result = NimbusResource.get_event_info(event_id)
@@ -121,7 +122,7 @@ def event_registration(event_id):
     return rsp
 
 
-@app.route("/event/<event_id>/unregister", methods=["POST"])
+@app.route("/event/<event_id>/unregister", methods=["DELETE"])
 def event_unregistration(event_id):
     attendee_id = request.get_json()['attendee_id']
 
