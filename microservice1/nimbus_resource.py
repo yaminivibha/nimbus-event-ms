@@ -109,7 +109,7 @@ class NimbusResource:
         sql = """
             select * from
                 event.event
-                where organizer_id=%s"""
+                where organizer_id='%s'"""
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, (organizer_id))
