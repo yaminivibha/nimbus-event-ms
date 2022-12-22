@@ -94,7 +94,7 @@ def get_attendees(event_id):
 
 
 @app.route("/event/<attendee_id>", methods=["GET"])
-def get_attendees(attendee_id):
+def get_users_events(attendee_id):
     result = NimbusResource.get_users_events(attendee_id)
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
