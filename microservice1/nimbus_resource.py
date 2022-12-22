@@ -101,6 +101,40 @@ class NimbusResource:
         return result
 
     @staticmethod
+    def get_organizer_events(organizer_id):
+        """Gets event information & ticket information for an organizer
+            Params: organizer_id
+            Returns: event information
+        """
+        sql = """
+            select * from
+                event.event
+                where organizer_id=%s"""
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql, (organizer_id))
+        result = cur.fetchall()
+
+        return result
+
+    @staticmethod
+    def get_users_events(attendee_id):
+        """Gets event information & ticket information for a user
+            Params: attendee_id
+            Returns: event information
+        """
+        sql = """
+            select * FROM event.event
+             WHERE event_id IN 
+             (SELECT  A.event_id from event.attendees as A WHERE A.attendee_id='%s')"""
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        res = cur.execute(sql, (attendee_id))
+        result = cur.fetchall()
+
+        return result
+
+    @staticmethod
     def create_event(event_info, loc_info):
         """create row in events.event
             Params: event_info

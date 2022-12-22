@@ -66,7 +66,6 @@ def all_events():
 
 @app.route("/event/<event_id>", methods=["GET", "DELETE", "PUT"])
 def event(event_id):
-    print(request)
     # handle different requests for this uri
     if request.method == "GET":
         result = NimbusResource.get_event_info(event_id)
@@ -86,6 +85,28 @@ def event(event_id):
 @app.route("/event/<event_id>/attendees", methods=["GET"])
 def get_attendees(event_id):
     result = NimbusResource.get_event_attendees(event_id)
+    if result:
+        rsp = Response(json.dumps(result, default=str), status=200,
+                       content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+    return rsp
+
+
+@app.route("/event/<attendee_id>", methods=["GET"])
+def get_attendees(attendee_id):
+    result = NimbusResource.get_users_events(attendee_id)
+    if result:
+        rsp = Response(json.dumps(result, default=str), status=200,
+                       content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+    return rsp
+
+
+@app.route("/event/<organizer_id>", methods=["GET"])
+def get_organizers_events(organizer_id):
+    result = NimbusResource.get_organizer_events(organizer_id)
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
@@ -124,6 +145,7 @@ def event_registration(event_id):
 
 @app.route("/event/<event_id>/unregister", methods=["DELETE"])
 def event_unregistration(event_id):
+    print(request.get_json())
     attendee_id = request.get_json()['attendee_id']
 
     result = NimbusResource.unregister_for_event(attendee_id, event_id)
