@@ -275,6 +275,7 @@ class NimbusResource:
         cur.execute(sql_loc)
         
         msg = json.dumps(event_info)
+        print(msg)
         msg = publish_message_to_sns(msg)
         return True
 
