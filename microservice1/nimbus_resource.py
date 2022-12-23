@@ -1,7 +1,7 @@
 import pymysql
-
+from sns_basics import publish_message_to_sns
 import os
-
+import json
 
 class NimbusResource:
     def __int__(self):
@@ -92,6 +92,25 @@ class NimbusResource:
         """
         sql = f"""
             select * from
+             event.attendees
+                 join attendee.contact_info
+                     on attendees.attendee_id = contact_info.attendee_id
+            where event_id='{event_id}'"""
+        conn = NimbusResource._get_connection()
+        cur = conn.cursor()
+        cur.execute(sql)
+        result = cur.fetchall()
+
+        return result
+    
+    @ staticmethod
+    def get_event_attendees_emails(event_id):
+        """Gets event attendee emails
+            Params: event_id
+            Returns: attendee emails
+        """
+        sql = f"""
+            select email_address from
              event.attendees
                  join attendee.contact_info
                      on attendees.attendee_id = contact_info.attendee_id
@@ -254,7 +273,9 @@ class NimbusResource:
         sql_loc += f" WHERE event_id={event_id}"
         print('sql of loc; ' + sql_loc)
         cur.execute(sql_loc)
-
+        
+        msg = json.dumps(event_info)
+        msg = publish_message_to_sns(msg)
         return True
 
     @ staticmethod
