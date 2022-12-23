@@ -54,14 +54,23 @@ def get_health():
 @app.route("/event", methods=["GET"])
 def all_events():
     result = NimbusResource.get_events()
-    print(result)
-
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
 
+    return rsp
+
+
+@app.route("/event/<event_id>/attendees", methods=["GET"])
+def get_attendees(event_id):
+    result = NimbusResource.get_event_attendees(event_id)
+    if result:
+        rsp = Response(json.dumps(result, default=str), status=200,
+                       content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
     return rsp
 
 
@@ -71,21 +80,14 @@ def event(event_id):
     if request.method == "GET":
         result = NimbusResource.get_event_info(event_id)
     elif request.method == "PUT":
-        result = NimbusResource.update_event(request.form)
-    else:
+        req_body = request.get_json(force=True)
+        result = NimbusResource.update_event(req_body.get('event_id', None), req_body.get(
+            'event_info', None), req_body.get('loc_info', None))
+    elif request.method == "DELETE":
         result = NimbusResource.delete_event(event_id)
-
-    if result:
-        rsp = Response(json.dumps(result, default=str), status=200,
-                       content_type="application.json")
     else:
-        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
-    return rsp
+        print(f"[/event/{event_id}]: Invalid request method specified")
 
-
-@app.route("/event/<event_id>/attendees", methods=["GET"])
-def get_attendees(event_id):
-    result = NimbusResource.get_event_attendees(event_id)
     if result:
         rsp = Response(json.dumps(result, default=str), status=200,
                        content_type="application.json")
