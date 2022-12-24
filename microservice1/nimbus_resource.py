@@ -248,8 +248,6 @@ class NimbusResource:
                 event_schema[col], val)}, """
 
         sql_event += f" WHERE event_id={event_id}"
-        print('sql of event: ')
-        print(sql_event)
 
         conn = NimbusResource._get_connection()
         cur = conn.cursor()
@@ -271,12 +269,15 @@ class NimbusResource:
                 loc_schema[col], val)}, """
 
         sql_loc += f" WHERE event_id={event_id}"
-        print('sql of loc; ' + sql_loc)
         cur.execute(sql_loc)
         
+        event_info.update(loc_info)
+        msg = NimbusResource.get_event_attendees_emails(event_id)
+        emails = [x['email_address'] for x in msg]
+        event_info['emails'] = emails
         msg = json.dumps(event_info)
-        print(msg)
         msg = publish_message_to_sns(msg)
+        
         return True
 
     @ staticmethod

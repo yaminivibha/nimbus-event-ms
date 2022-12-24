@@ -33,7 +33,6 @@ def after_request_func():
 
 """
 
-
 @app.get("/api/health")
 def get_health():
     t = str(datetime.now())
@@ -80,6 +79,7 @@ def event(event_id):
     if request.method == "GET":
         result = NimbusResource.get_event_info(event_id)
     elif request.method == "PUT":
+        print("UPDATING EVENT!!!!")
         req_body = request.get_json(force=True)
         result = NimbusResource.update_event(req_body.get('event_id', None), req_body.get(
             'event_info', None), req_body.get('loc_info', None))
